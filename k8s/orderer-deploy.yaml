@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderer-example-com
+spec:
+  selector:
+    matchLabels:
+      name: orderer-example-com
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: orderer-example-com
+    spec:
+      volumes:
+      - name: fabricfiles
+        persistentVolumeClaim:
+          claimName: fabric-pvc
+
+      containers:
+      - name: orderer
+        image: hyperledger/fabric-orderer:2.0.0
+        workingDir: /opt/gopath/src/github.com/hyperledger/fabric
+        command: ["sh", "-c", "orderer"]
+        env:
+        - name: TZ
+          value: "Europe/Brussels"
+        - name: GODEBUG
+          value: netdns=go
+        - name: CORE_VM_ENDPOINT
+          value: unix:///host/var/run/docker.sock
+        - name: FABRIC_LOGGING_SPEC
+          value: DEBUG
+        - name: ORDERER_CFG_PATH
+          value: /fabric/
+        - name: CONFIGTX_ORDERER_ADDRESSES
+          value: "orderer-example-com:7050"
+        - name: ORDERER_GENERAL_LISTENADDRESS
+          value: 0.0.0.0
+        - name: ORDERER_GENERAL_LISTENPORT
+          value: "7050"
+        - name: ORDERER_GENERAL_LOGLEVEL
+          value: debug
+        - name: ORDERER_GENERAL_LOCALMSPDIR
+          value: /fabric/crypto-config/ordererOrganizations/example-com/orderers/orderer-example-com/msp
+        - name: ORDERER_GENERAL_LOCALMSPID
+          value: OrdererMSP
+        - name: ORDERER_GENERAL_GENESISMETHOD
+          value: file
+        - name: ORDERER_GENERAL_GENESISFILE
+          value: /fabric/genesis.block
+        - name: ORDERER_GENERAL_TLS_ENABLED
+          value: "true"
+        - name: ORDERER_GENERAL_TLS_CLIENTAUTHREQUIRED
+          value: "false"
+        - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+          value: /fabric/crypto-config/ordererOrganizations/example-com/orderers/orderer-example-com/tls/server.key
+        - name: ORDERER_GENERAL_TLS_CERTIFICATE
+          value: /fabric/crypto-config/ordererOrganizations/example-com/orderers/orderer-example-com/tls/server.crt
+        - name: ORDERER_GENERAL_TLS_ROOTCAS
+          value: '[/fabric/crypto-config/ordererOrganizations/example-com/orderers/orderer-example-com/tls/ca.crt]'
+        - name: ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY
+          value: /fabric/crypto-config/ordererOrganizations/example-com/orderers/orderer-example-com/tls/server.key
+        - name: ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE
+          value: /fabric/crypto-config/ordererOrganizations/example-com/orderers/orderer-example-com/tls/server.crt
+        - name: ORDERER_GENERAL_CLUSTER_ROOTCAS
+          value: '[/fabric/crypto-config/ordererOrganizations/example-com/orderers/orderer-example-com/tls/ca.crt]'
+        - name: ORDERER_KAFKA_TOPIC_REPLICATIONFACTOR
+          value: "1"
+        - name: ORDERER_KAFKA_VERBOSE
+          value: "true"
+        volumeMounts:
+        - mountPath: /fabric
+          name: fabricfiles

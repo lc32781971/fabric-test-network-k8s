@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peer0-org2-example-com
+spec:
+  selector:
+    matchLabels:
+      name: peer0-org2-example-com
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: peer0-org2-example-com
+    spec:
+      volumes:
+      - name: fabricfiles
+        persistentVolumeClaim:
+          claimName: fabric-pvc
+      - name: dockersocket
+        hostPath:
+          path: /var/run/docker.sock
+
+      containers:
+      - name: peer
+        image: hyperledger/fabric-peer:2.0.0
+        workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+        command: ["sh", "-c", "peer node start"]
+        env:
+        - name: TZ
+          value: "Europe/Brussels"
+        - name: GODEBUG
+          value: netdns=go
+        - name: FABRIC_CFG_PATH
+          value: /etc/hyperledger/fabric/
+        - name: CORE_PEER_ADDRESS
+          value: peer0-org2-example-com:9051
+        - name: CORE_PEER_CHAINCODEADDRESS
+          value: peer0-org2-example-com:9052
+        - name: CORE_PEER_CHAINCODELISTENADDRESS
+          value: 0.0.0.0:9052
+        - name: CORE_PEER_GOSSIP_BOOTSTRAP
+          value: peer0-org2-example-com:9051
+        - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+          value: peer0-org2-example-com:9051
+        - name: CORE_PEER_GOSSIP_ORGLEADER
+          value: "false"
+        - name: CORE_PEER_GOSSIP_USELEADERELECTION
+          value: "true"
+        - name: CORE_PEER_ID
+          value: peer0-org2-example-com
+        - name: CORE_PEER_LISTENADDRESS
+          value: 0.0.0.0:9051
+        - name: CORE_PEER_LOCALMSPID
+          value: Org2MSP
+        - name: CORE_PEER_PROFILE_ENABLED
+          value: "true"
+        - name: CORE_PEER_TLS_CERT_FILE
+          value: /fabric/crypto-config/peerOrganizations/org2-example-com/peers/peer0-org2-example-com/tls/server.crt
+        - name: CORE_PEER_TLS_ENABLED
+          value: "true"
+        - name: CORE_PEER_TLS_CLIENTAUTHREQUIRED
+          value: "false"
+        - name: CORE_PEER_TLS_KEY_FILE
+          value: /fabric/crypto-config/peerOrganizations/org2-example-com/peers/peer0-org2-example-com/tls/server.key
+        - name: CORE_PEER_TLS_ROOTCERT_FILE
+          value: /fabric/crypto-config/peerOrganizations/org2-example-com/peers/peer0-org2-example-com/tls/ca.crt
+        - name: CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE
+          value: _test
+        - name: CORE_VM_ENDPOINT
+          value: unix:///host/var/run/docker.sock
+        - name: FABRIC_LOGGING_SPEC
+          value: DEBUG
+        volumeMounts:
+        - mountPath: /fabric
+          name: fabricfiles
+        - mountPath: /host/var/run/docker.sock
+          name: dockersocket
+      # - name: couchdb
+      #   image: hyperledger/fabric-couchdb:0.4.15
