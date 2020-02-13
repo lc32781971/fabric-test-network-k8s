@@ -67,9 +67,9 @@ spec:
         - name: CORE_PEER_TLS_ROOTCERT_FILE
           value: /fabric/crypto-config/peerOrganizations/org1-example-com/peers/peer0-org1-example-com/tls/ca.crt
         - name: CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE
-          value: _test
+          value: bridge
         - name: CORE_VM_ENDPOINT
-          value: unix:///host/var/run/docker.sock
+          value: tcp://docker-dind:2375
         - name: FABRIC_LOGGING_SPEC
           value: DEBUG
         volumeMounts:

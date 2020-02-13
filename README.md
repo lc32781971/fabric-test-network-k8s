@@ -21,6 +21,9 @@ sudo service nfs-kernel-server status
 in k8s folder:
 
 ```bash
+kubectl apply -f docker-volume.yaml
+kubectl apply -f docker.yaml
+
 kubectl apply -f fabric-pv.yaml
 kubectl apply -f fabric-pvc.yaml
 kubectl apply -f fabric-tools.yaml
@@ -28,12 +31,12 @@ kubectl apply -f fabric-tools.yaml
 # wait that the fabric-tools pod is created
 
 kubectl exec -it fabric-tools -- mkdir /fabric/config
-kubectl exec -it fabric-tools -- mkdir /go/src/fabcar
 
 kubectl cp ../config/configtx.yaml fabric-tools:/fabric/config/
 kubectl cp ../config/crypto-config-orderer.yaml fabric-tools:/fabric/config/
 kubectl cp ../config/crypto-config-org1.yaml fabric-tools:/fabric/config/
 kubectl cp ../config/crypto-config-org2.yaml fabric-tools:/fabric/config/
+
 kubectl cp ../chaincode/fabcar fabric-tools:/go/src/
 kubectl cp ../chaincode/marbles fabric-tools:/go/src/
 
