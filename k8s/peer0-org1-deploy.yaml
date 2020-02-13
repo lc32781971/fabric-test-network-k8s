@@ -52,6 +52,8 @@ spec:
           value: 0.0.0.0:7051
         - name: CORE_PEER_LOCALMSPID
           value: Org1MSP
+        - name: CORE_PEER_MSPCONFIGPATH
+          value: /fabric/crypto-config/peerOrganizations/org1-example-com/peers/peer0-org1-example-com/msp/
         - name: CORE_PEER_PROFILE_ENABLED
           value: "true"
         - name: CORE_PEER_TLS_CERT_FILE

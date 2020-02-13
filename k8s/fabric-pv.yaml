@@ -15,5 +15,5 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   nfs:
     path: '/nfs/fabric'
-    server: 192.168.99.1
+    server: 10.0.2.15
     readOnly: false
